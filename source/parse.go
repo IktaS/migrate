@@ -30,7 +30,7 @@ func Parse(raw string) (*Migration, error) {
 			return nil, err
 		}
 		return &Migration{
-			Version:    uint(versionUint64),
+			Version:    versionUint64,
 			Identifier: m[2],
 			Direction:  Direction(m[3]),
 			Raw:        raw,

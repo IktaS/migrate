@@ -45,31 +45,31 @@ type Driver interface {
 	// First returns the very first migration version available to the driver.
 	// Migrate will call this function multiple times.
 	// If there is no version available, it must return os.ErrNotExist.
-	First() (version uint, err error)
+	First() (version uint64, err error)
 
 	// Prev returns the previous version for a given version available to the driver.
 	// Migrate will call this function multiple times.
 	// If there is no previous version available, it must return os.ErrNotExist.
-	Prev(version uint) (prevVersion uint, err error)
+	Prev(version uint64) (prevVersion uint64, err error)
 
 	// Next returns the next version for a given version available to the driver.
 	// Migrate will call this function multiple times.
 	// If there is no next version available, it must return os.ErrNotExist.
-	Next(version uint) (nextVersion uint, err error)
+	Next(version uint64) (nextVersion uint64, err error)
 
 	// ReadUp returns the UP migration body and an identifier that helps
 	// finding this migration in the source for a given version.
 	// If there is no up migration available for this version,
 	// it must return os.ErrNotExist.
 	// Do not start reading, just return the ReadCloser!
-	ReadUp(version uint) (r io.ReadCloser, identifier string, err error)
+	ReadUp(version uint64) (r io.ReadCloser, identifier string, err error)
 
 	// ReadDown returns the DOWN migration body and an identifier that helps
 	// finding this migration in the source for a given version.
 	// If there is no down migration available for this version,
 	// it must return os.ErrNotExist.
 	// Do not start reading, just return the ReadCloser!
-	ReadDown(version uint) (r io.ReadCloser, identifier string, err error)
+	ReadDown(version uint64) (r io.ReadCloser, identifier string, err error)
 }
 
 // Open returns a new driver instance.

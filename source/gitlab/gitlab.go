@@ -155,7 +155,7 @@ func (g *Gitlab) nodeToMigration(node *gitlab.TreeNode) (*source.Migration, erro
 			return nil, err
 		}
 		return &source.Migration{
-			Version:    uint(versionUint64),
+			Version:    versionUint64,
 			Identifier: m[2],
 			Direction:  source.Direction(m[3]),
 			Raw:        g.path + "/" + node.Name,
@@ -168,7 +168,7 @@ func (g *Gitlab) Close() error {
 	return nil
 }
 
-func (g *Gitlab) First() (version uint, er error) {
+func (g *Gitlab) First() (version uint64, er error) {
 	if v, ok := g.migrations.First(); !ok {
 		return 0, &os.PathError{Op: "first", Path: g.path, Err: os.ErrNotExist}
 	} else {
@@ -176,7 +176,7 @@ func (g *Gitlab) First() (version uint, er error) {
 	}
 }
 
-func (g *Gitlab) Prev(version uint) (prevVersion uint, err error) {
+func (g *Gitlab) Prev(version uint64) (prevVersion uint64, err error) {
 	if v, ok := g.migrations.Prev(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("prev for version %v", version), Path: g.path, Err: os.ErrNotExist}
 	} else {
@@ -184,7 +184,7 @@ func (g *Gitlab) Prev(version uint) (prevVersion uint, err error) {
 	}
 }
 
-func (g *Gitlab) Next(version uint) (nextVersion uint, err error) {
+func (g *Gitlab) Next(version uint64) (nextVersion uint64, err error) {
 	if v, ok := g.migrations.Next(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("next for version %v", version), Path: g.path, Err: os.ErrNotExist}
 	} else {
@@ -192,7 +192,7 @@ func (g *Gitlab) Next(version uint) (nextVersion uint, err error) {
 	}
 }
 
-func (g *Gitlab) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (g *Gitlab) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := g.migrations.Up(version); ok {
 		f, response, err := g.client.RepositoryFiles.GetFile(g.projectID, m.Raw, g.getOptions)
 		if err != nil {
@@ -214,7 +214,7 @@ func (g *Gitlab) ReadUp(version uint) (r io.ReadCloser, identifier string, err e
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read version %v", version), Path: g.path, Err: os.ErrNotExist}
 }
 
-func (g *Gitlab) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (g *Gitlab) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := g.migrations.Down(version); ok {
 		f, response, err := g.client.RepositoryFiles.GetFile(g.projectID, m.Raw, g.getOptions)
 		if err != nil {

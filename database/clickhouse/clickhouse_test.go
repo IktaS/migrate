@@ -162,7 +162,7 @@ func testMigrate(t *testing.T, engine string) {
 
 func testVersion(t *testing.T, engine string) {
 	dktesting.ParallelTest(t, specs, func(t *testing.T, c dktest.ContainerInfo) {
-		expectedVersion := 1
+		expectedVersion := int64(1)
 
 		ip, port, err := c.Port(defaultPort)
 		if err != nil {

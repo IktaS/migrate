@@ -119,11 +119,11 @@ func TestSetVersion(t *testing.T, d database.Driver) {
 	// nolint:maligned
 	testCases := []struct {
 		name            string
-		version         int
+		version         int64
 		dirty           bool
 		expectedErr     error
 		expectedReadErr error
-		expectedVersion int
+		expectedVersion int64
 		expectedDirty   bool
 	}{
 		{name: "set 1 dirty", version: 1, dirty: true, expectedErr: nil, expectedReadErr: nil, expectedVersion: 1, expectedDirty: true},

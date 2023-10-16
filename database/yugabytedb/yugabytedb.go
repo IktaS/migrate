@@ -270,7 +270,7 @@ func (c *YugabyteDB) Run(migration io.Reader) error {
 	return nil
 }
 
-func (c *YugabyteDB) SetVersion(version int, dirty bool) error {
+func (c *YugabyteDB) SetVersion(version int64, dirty bool) error {
 	return c.doTxWithRetry(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable}, func(tx *sql.Tx) error {
 		if _, err := tx.Exec(`DELETE FROM "` + c.config.MigrationsTable + `"`); err != nil {
 			return err
@@ -289,7 +289,7 @@ func (c *YugabyteDB) SetVersion(version int, dirty bool) error {
 	})
 }
 
-func (c *YugabyteDB) Version() (version int, dirty bool, err error) {
+func (c *YugabyteDB) Version() (version int64, dirty bool, err error) {
 	query := `SELECT version, dirty FROM "` + c.config.MigrationsTable + `" LIMIT 1`
 	err = c.db.QueryRow(query).Scan(&version, &dirty)
 

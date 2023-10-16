@@ -91,7 +91,7 @@ func (d *PartialDriver) Close() error {
 }
 
 // First is part of source.Driver interface implementation.
-func (d *PartialDriver) First() (version uint, err error) {
+func (d *PartialDriver) First() (version uint64, err error) {
 	if version, ok := d.migrations.First(); ok {
 		return version, nil
 	}
@@ -103,7 +103,7 @@ func (d *PartialDriver) First() (version uint, err error) {
 }
 
 // Prev is part of source.Driver interface implementation.
-func (d *PartialDriver) Prev(version uint) (prevVersion uint, err error) {
+func (d *PartialDriver) Prev(version uint64) (prevVersion uint64, err error) {
 	if version, ok := d.migrations.Prev(version); ok {
 		return version, nil
 	}
@@ -115,7 +115,7 @@ func (d *PartialDriver) Prev(version uint) (prevVersion uint, err error) {
 }
 
 // Next is part of source.Driver interface implementation.
-func (d *PartialDriver) Next(version uint) (nextVersion uint, err error) {
+func (d *PartialDriver) Next(version uint64) (nextVersion uint64, err error) {
 	if version, ok := d.migrations.Next(version); ok {
 		return version, nil
 	}
@@ -127,7 +127,7 @@ func (d *PartialDriver) Next(version uint) (nextVersion uint, err error) {
 }
 
 // ReadUp is part of source.Driver interface implementation.
-func (d *PartialDriver) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (d *PartialDriver) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := d.migrations.Up(version); ok {
 		body, err := d.open(path.Join(d.path, m.Raw))
 		if err != nil {
@@ -143,7 +143,7 @@ func (d *PartialDriver) ReadUp(version uint) (r io.ReadCloser, identifier string
 }
 
 // ReadDown is part of source.Driver interface implementation.
-func (d *PartialDriver) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (d *PartialDriver) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := d.migrations.Down(version); ok {
 		body, err := d.open(path.Join(d.path, m.Raw))
 		if err != nil {

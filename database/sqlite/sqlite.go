@@ -228,7 +228,7 @@ func (m *Sqlite) executeQueryNoTx(query string) error {
 	return nil
 }
 
-func (m *Sqlite) SetVersion(version int, dirty bool) error {
+func (m *Sqlite) SetVersion(version int64, dirty bool) error {
 	tx, err := m.db.Begin()
 	if err != nil {
 		return &database.Error{OrigErr: err, Err: "transaction start failed"}
@@ -259,7 +259,7 @@ func (m *Sqlite) SetVersion(version int, dirty bool) error {
 	return nil
 }
 
-func (m *Sqlite) Version() (version int, dirty bool, err error) {
+func (m *Sqlite) Version() (version int64, dirty bool, err error) {
 	query := "SELECT version, dirty FROM " + m.config.MigrationsTable + " LIMIT 1"
 	err = m.db.QueryRow(query).Scan(&version, &dirty)
 	if err != nil {

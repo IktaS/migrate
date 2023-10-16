@@ -45,7 +45,7 @@ func (s *Stub) Close() error {
 	return nil
 }
 
-func (s *Stub) First() (version uint, err error) {
+func (s *Stub) First() (version uint64, err error) {
 	if v, ok := s.Migrations.First(); !ok {
 		return 0, &os.PathError{Op: "first", Path: s.Url, Err: os.ErrNotExist} // TODO: s.Url can be empty when called with WithInstance
 	} else {
@@ -53,7 +53,7 @@ func (s *Stub) First() (version uint, err error) {
 	}
 }
 
-func (s *Stub) Prev(version uint) (prevVersion uint, err error) {
+func (s *Stub) Prev(version uint64) (prevVersion uint64, err error) {
 	if v, ok := s.Migrations.Prev(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("prev for version %v", version), Path: s.Url, Err: os.ErrNotExist}
 	} else {
@@ -61,7 +61,7 @@ func (s *Stub) Prev(version uint) (prevVersion uint, err error) {
 	}
 }
 
-func (s *Stub) Next(version uint) (nextVersion uint, err error) {
+func (s *Stub) Next(version uint64) (nextVersion uint64, err error) {
 	if v, ok := s.Migrations.Next(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("next for version %v", version), Path: s.Url, Err: os.ErrNotExist}
 	} else {
@@ -69,14 +69,14 @@ func (s *Stub) Next(version uint) (nextVersion uint, err error) {
 	}
 }
 
-func (s *Stub) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (s *Stub) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := s.Migrations.Up(version); ok {
 		return io.NopCloser(bytes.NewBufferString(m.Identifier)), fmt.Sprintf("%v.up.stub", version), nil
 	}
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read up version %v", version), Path: s.Url, Err: os.ErrNotExist}
 }
 
-func (s *Stub) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (s *Stub) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := s.Migrations.Down(version); ok {
 		return io.NopCloser(bytes.NewBufferString(m.Identifier)), fmt.Sprintf("%v.down.stub", version), nil
 	}

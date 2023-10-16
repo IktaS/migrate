@@ -355,7 +355,7 @@ func (m *Mysql) Run(migration io.Reader) error {
 	return nil
 }
 
-func (m *Mysql) SetVersion(version int, dirty bool) error {
+func (m *Mysql) SetVersion(version int64, dirty bool) error {
 	tx, err := m.conn.BeginTx(context.Background(), &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
 		return &database.Error{OrigErr: err, Err: "transaction start failed"}
@@ -389,7 +389,7 @@ func (m *Mysql) SetVersion(version int, dirty bool) error {
 	return nil
 }
 
-func (m *Mysql) Version() (version int, dirty bool, err error) {
+func (m *Mysql) Version() (version int64, dirty bool, err error) {
 	query := "SELECT version, dirty FROM `" + m.config.MigrationsTable + "` LIMIT 1"
 	err = m.conn.QueryRowContext(context.Background(), query).Scan(&version, &dirty)
 	switch {

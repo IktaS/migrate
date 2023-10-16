@@ -40,11 +40,11 @@ func (m *mockDriver) Run(migration io.Reader) error {
 	return nil
 }
 
-func (m *mockDriver) SetVersion(version int, dirty bool) error {
+func (m *mockDriver) SetVersion(version int64, dirty bool) error {
 	return nil
 }
 
-func (m *mockDriver) Version() (version int, dirty bool, err error) {
+func (m *mockDriver) Version() (version int64, dirty bool, err error) {
 	return 0, false, nil
 }
 

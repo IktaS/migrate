@@ -101,7 +101,7 @@ func (s *s3Driver) Close() error {
 	return nil
 }
 
-func (s *s3Driver) First() (uint, error) {
+func (s *s3Driver) First() (uint64, error) {
 	v, ok := s.migrations.First()
 	if !ok {
 		return 0, os.ErrNotExist
@@ -109,7 +109,7 @@ func (s *s3Driver) First() (uint, error) {
 	return v, nil
 }
 
-func (s *s3Driver) Prev(version uint) (uint, error) {
+func (s *s3Driver) Prev(version uint64) (uint64, error) {
 	v, ok := s.migrations.Prev(version)
 	if !ok {
 		return 0, os.ErrNotExist
@@ -117,7 +117,7 @@ func (s *s3Driver) Prev(version uint) (uint, error) {
 	return v, nil
 }
 
-func (s *s3Driver) Next(version uint) (uint, error) {
+func (s *s3Driver) Next(version uint64) (uint64, error) {
 	v, ok := s.migrations.Next(version)
 	if !ok {
 		return 0, os.ErrNotExist
@@ -125,14 +125,14 @@ func (s *s3Driver) Next(version uint) (uint, error) {
 	return v, nil
 }
 
-func (s *s3Driver) ReadUp(version uint) (io.ReadCloser, string, error) {
+func (s *s3Driver) ReadUp(version uint64) (io.ReadCloser, string, error) {
 	if m, ok := s.migrations.Up(version); ok {
 		return s.open(m)
 	}
 	return nil, "", os.ErrNotExist
 }
 
-func (s *s3Driver) ReadDown(version uint) (io.ReadCloser, string, error) {
+func (s *s3Driver) ReadDown(version uint64) (io.ReadCloser, string, error) {
 	if m, ok := s.migrations.Down(version); ok {
 		return s.open(m)
 	}

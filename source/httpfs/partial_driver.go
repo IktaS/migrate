@@ -71,7 +71,7 @@ func (p *PartialDriver) Close() error {
 }
 
 // First is part of source.Driver interface implementation.
-func (p *PartialDriver) First() (version uint, err error) {
+func (p *PartialDriver) First() (version uint64, err error) {
 	if version, ok := p.migrations.First(); ok {
 		return version, nil
 	}
@@ -83,7 +83,7 @@ func (p *PartialDriver) First() (version uint, err error) {
 }
 
 // Prev is part of source.Driver interface implementation.
-func (p *PartialDriver) Prev(version uint) (prevVersion uint, err error) {
+func (p *PartialDriver) Prev(version uint64) (prevVersion uint64, err error) {
 	if version, ok := p.migrations.Prev(version); ok {
 		return version, nil
 	}
@@ -95,7 +95,7 @@ func (p *PartialDriver) Prev(version uint) (prevVersion uint, err error) {
 }
 
 // Next is part of source.Driver interface implementation.
-func (p *PartialDriver) Next(version uint) (nextVersion uint, err error) {
+func (p *PartialDriver) Next(version uint64) (nextVersion uint64, err error) {
 	if version, ok := p.migrations.Next(version); ok {
 		return version, nil
 	}
@@ -107,7 +107,7 @@ func (p *PartialDriver) Next(version uint) (nextVersion uint, err error) {
 }
 
 // ReadUp is part of source.Driver interface implementation.
-func (p *PartialDriver) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (p *PartialDriver) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := p.migrations.Up(version); ok {
 		body, err := p.open(path.Join(p.path, m.Raw))
 		if err != nil {
@@ -123,7 +123,7 @@ func (p *PartialDriver) ReadUp(version uint) (r io.ReadCloser, identifier string
 }
 
 // ReadDown is part of source.Driver interface implementation.
-func (p *PartialDriver) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (p *PartialDriver) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := p.migrations.Down(version); ok {
 		body, err := p.open(path.Join(p.path, m.Raw))
 		if err != nil {

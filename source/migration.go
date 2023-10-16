@@ -17,7 +17,7 @@ const (
 // Migration is fully independent from migrate.Migration.
 type Migration struct {
 	// Version is the version of this migration.
-	Version uint
+	Version uint64
 
 	// Identifier can be any string that helps identifying
 	// this migration in the source.
@@ -35,13 +35,13 @@ type Migration struct {
 // to keep track of Migration order.
 type Migrations struct {
 	index      uintSlice
-	migrations map[uint]map[Direction]*Migration
+	migrations map[uint64]map[Direction]*Migration
 }
 
 func NewMigrations() *Migrations {
 	return &Migrations{
 		index:      make(uintSlice, 0),
-		migrations: make(map[uint]map[Direction]*Migration),
+		migrations: make(map[uint64]map[Direction]*Migration),
 	}
 }
 
@@ -75,14 +75,14 @@ func (i *Migrations) buildIndex() {
 	})
 }
 
-func (i *Migrations) First() (version uint, ok bool) {
+func (i *Migrations) First() (version uint64, ok bool) {
 	if len(i.index) == 0 {
 		return 0, false
 	}
 	return i.index[0], true
 }
 
-func (i *Migrations) Prev(version uint) (prevVersion uint, ok bool) {
+func (i *Migrations) Prev(version uint64) (prevVersion uint64, ok bool) {
 	pos := i.findPos(version)
 	if pos >= 1 && len(i.index) > pos-1 {
 		return i.index[pos-1], true
@@ -90,7 +90,7 @@ func (i *Migrations) Prev(version uint) (prevVersion uint, ok bool) {
 	return 0, false
 }
 
-func (i *Migrations) Next(version uint) (nextVersion uint, ok bool) {
+func (i *Migrations) Next(version uint64) (nextVersion uint64, ok bool) {
 	pos := i.findPos(version)
 	if pos >= 0 && len(i.index) > pos+1 {
 		return i.index[pos+1], true
@@ -98,7 +98,7 @@ func (i *Migrations) Next(version uint) (nextVersion uint, ok bool) {
 	return 0, false
 }
 
-func (i *Migrations) Up(version uint) (m *Migration, ok bool) {
+func (i *Migrations) Up(version uint64) (m *Migration, ok bool) {
 	if _, ok := i.migrations[version]; ok {
 		if mx, ok := i.migrations[version][Up]; ok {
 			return mx, true
@@ -107,7 +107,7 @@ func (i *Migrations) Up(version uint) (m *Migration, ok bool) {
 	return nil, false
 }
 
-func (i *Migrations) Down(version uint) (m *Migration, ok bool) {
+func (i *Migrations) Down(version uint64) (m *Migration, ok bool) {
 	if _, ok := i.migrations[version]; ok {
 		if mx, ok := i.migrations[version][Down]; ok {
 			return mx, true
@@ -116,7 +116,7 @@ func (i *Migrations) Down(version uint) (m *Migration, ok bool) {
 	return nil, false
 }
 
-func (i *Migrations) findPos(version uint) int {
+func (i *Migrations) findPos(version uint64) int {
 	if len(i.index) > 0 {
 		ix := i.index.Search(version)
 		if ix < len(i.index) && i.index[ix] == version {
@@ -126,8 +126,8 @@ func (i *Migrations) findPos(version uint) int {
 	return -1
 }
 
-type uintSlice []uint
+type uintSlice []uint64
 
-func (s uintSlice) Search(x uint) int {
+func (s uintSlice) Search(x uint64) int {
 	return sort.Search(len(s), func(i int) bool { return s[i] >= x })
 }

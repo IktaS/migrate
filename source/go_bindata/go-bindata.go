@@ -71,7 +71,7 @@ func (b *Bindata) Close() error {
 	return nil
 }
 
-func (b *Bindata) First() (version uint, err error) {
+func (b *Bindata) First() (version uint64, err error) {
 	if v, ok := b.migrations.First(); !ok {
 		return 0, &os.PathError{Op: "first", Path: b.path, Err: os.ErrNotExist}
 	} else {
@@ -79,7 +79,7 @@ func (b *Bindata) First() (version uint, err error) {
 	}
 }
 
-func (b *Bindata) Prev(version uint) (prevVersion uint, err error) {
+func (b *Bindata) Prev(version uint64) (prevVersion uint64, err error) {
 	if v, ok := b.migrations.Prev(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("prev for version %v", version), Path: b.path, Err: os.ErrNotExist}
 	} else {
@@ -87,7 +87,7 @@ func (b *Bindata) Prev(version uint) (prevVersion uint, err error) {
 	}
 }
 
-func (b *Bindata) Next(version uint) (nextVersion uint, err error) {
+func (b *Bindata) Next(version uint64) (nextVersion uint64, err error) {
 	if v, ok := b.migrations.Next(version); !ok {
 		return 0, &os.PathError{Op: fmt.Sprintf("next for version %v", version), Path: b.path, Err: os.ErrNotExist}
 	} else {
@@ -95,7 +95,7 @@ func (b *Bindata) Next(version uint) (nextVersion uint, err error) {
 	}
 }
 
-func (b *Bindata) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (b *Bindata) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := b.migrations.Up(version); ok {
 		body, err := b.assetSource.AssetFunc(m.Raw)
 		if err != nil {
@@ -106,7 +106,7 @@ func (b *Bindata) ReadUp(version uint) (r io.ReadCloser, identifier string, err 
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read version %v", version), Path: b.path, Err: os.ErrNotExist}
 }
 
-func (b *Bindata) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (b *Bindata) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	if m, ok := b.migrations.Down(version); ok {
 		body, err := b.assetSource.AssetFunc(m.Raw)
 		if err != nil {

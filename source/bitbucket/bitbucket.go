@@ -130,7 +130,7 @@ func (b *Bitbucket) Close() error {
 	return nil
 }
 
-func (b *Bitbucket) First() (version uint, er error) {
+func (b *Bitbucket) First() (version uint64, er error) {
 	b.ensureFields()
 
 	if v, ok := b.migrations.First(); !ok {
@@ -140,7 +140,7 @@ func (b *Bitbucket) First() (version uint, er error) {
 	}
 }
 
-func (b *Bitbucket) Prev(version uint) (prevVersion uint, err error) {
+func (b *Bitbucket) Prev(version uint64) (prevVersion uint64, err error) {
 	b.ensureFields()
 
 	if v, ok := b.migrations.Prev(version); !ok {
@@ -150,7 +150,7 @@ func (b *Bitbucket) Prev(version uint) (prevVersion uint, err error) {
 	}
 }
 
-func (b *Bitbucket) Next(version uint) (nextVersion uint, err error) {
+func (b *Bitbucket) Next(version uint64) (nextVersion uint64, err error) {
 	b.ensureFields()
 
 	if v, ok := b.migrations.Next(version); !ok {
@@ -160,7 +160,7 @@ func (b *Bitbucket) Next(version uint) (nextVersion uint, err error) {
 	}
 }
 
-func (b *Bitbucket) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (b *Bitbucket) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	b.ensureFields()
 
 	if m, ok := b.migrations.Up(version); ok {
@@ -182,7 +182,7 @@ func (b *Bitbucket) ReadUp(version uint) (r io.ReadCloser, identifier string, er
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read version %v", version), Path: b.config.Path, Err: os.ErrNotExist}
 }
 
-func (b *Bitbucket) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (b *Bitbucket) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	b.ensureFields()
 
 	if m, ok := b.migrations.Down(version); ok {

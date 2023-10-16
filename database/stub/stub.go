@@ -16,7 +16,7 @@ func init() {
 type Stub struct {
 	Url               string
 	Instance          interface{}
-	CurrentVersion    int
+	CurrentVersion    int64
 	MigrationSequence []string
 	LastRunMigration  []byte // todo: make []string
 	IsDirty           bool
@@ -73,13 +73,13 @@ func (s *Stub) Run(migration io.Reader) error {
 	return nil
 }
 
-func (s *Stub) SetVersion(version int, state bool) error {
+func (s *Stub) SetVersion(version int64, state bool) error {
 	s.CurrentVersion = version
 	s.IsDirty = state
 	return nil
 }
 
-func (s *Stub) Version() (version int, dirty bool, err error) {
+func (s *Stub) Version() (version int64, dirty bool, err error) {
 	return s.CurrentVersion, s.IsDirty, nil
 }
 

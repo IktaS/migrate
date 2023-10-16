@@ -40,11 +40,11 @@ func (m MultiError) Error() string {
 // suint safely converts int to uint
 // see https://goo.gl/wEcqof
 // see https://goo.gl/pai7Dr
-func suint(n int) uint {
+func suint(n int64) uint64 {
 	if n < 0 {
 		panic(fmt.Sprintf("suint(%v) expects input >= 0", n))
 	}
-	return uint(n)
+	return uint64(n)
 }
 
 // FilterCustomQuery filters all query values starting with `x-`

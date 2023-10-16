@@ -48,7 +48,7 @@ func (e ErrShortLimit) Error() string {
 }
 
 type ErrDirty struct {
-	Version int
+	Version int64
 }
 
 func (e ErrDirty) Error() string {
@@ -399,7 +399,7 @@ func (m *Migrate) Version() (version uint, dirty bool, err error) {
 // Each migration is then written to the ret channel.
 // If an error occurs during reading, that error is written to the ret channel, too.
 // Once read is done reading it will close the ret channel.
-func (m *Migrate) read(from int, to int, ret chan<- interface{}) {
+func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 	defer close(ret)
 
 	// check if from version exists
@@ -775,7 +775,7 @@ func (m *Migrate) runMigrations(ret <-chan interface{}) error {
 
 // versionExists checks the source if either the up or down migration for
 // the specified migration version exists.
-func (m *Migrate) versionExists(version uint) (result error) {
+func (m *Migrate) versionExists(version uint64) (result error) {
 	// try up migration first
 	up, _, err := m.sourceDrv.ReadUp(version)
 	if err == nil {

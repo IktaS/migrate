@@ -243,7 +243,7 @@ func (c *Cassandra) Run(migration io.Reader) error {
 	return nil
 }
 
-func (c *Cassandra) SetVersion(version int, dirty bool) error {
+func (c *Cassandra) SetVersion(version int64, dirty bool) error {
 	// DELETE instead of TRUNCATE because AWS Keyspaces does not support it
 	// see: https://docs.aws.amazon.com/keyspaces/latest/devguide/cassandra-apis.html
 	squery := `SELECT version FROM "` + c.config.MigrationsTable + `"`
@@ -273,7 +273,7 @@ func (c *Cassandra) SetVersion(version int, dirty bool) error {
 }
 
 // Return current keyspace version
-func (c *Cassandra) Version() (version int, dirty bool, err error) {
+func (c *Cassandra) Version() (version int64, dirty bool, err error) {
 	query := `SELECT version, dirty FROM "` + c.config.MigrationsTable + `" LIMIT 1`
 	err = c.session.Query(query).Scan(&version, &dirty)
 	switch {

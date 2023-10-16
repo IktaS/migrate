@@ -144,7 +144,7 @@ func (g *Github) Close() error {
 	return nil
 }
 
-func (g *Github) First() (version uint, err error) {
+func (g *Github) First() (version uint64, err error) {
 	g.ensureFields()
 
 	if v, ok := g.migrations.First(); !ok {
@@ -154,7 +154,7 @@ func (g *Github) First() (version uint, err error) {
 	}
 }
 
-func (g *Github) Prev(version uint) (prevVersion uint, err error) {
+func (g *Github) Prev(version uint64) (prevVersion uint64, err error) {
 	g.ensureFields()
 
 	if v, ok := g.migrations.Prev(version); !ok {
@@ -164,7 +164,7 @@ func (g *Github) Prev(version uint) (prevVersion uint, err error) {
 	}
 }
 
-func (g *Github) Next(version uint) (nextVersion uint, err error) {
+func (g *Github) Next(version uint64) (nextVersion uint64, err error) {
 	g.ensureFields()
 
 	if v, ok := g.migrations.Next(version); !ok {
@@ -174,7 +174,7 @@ func (g *Github) Next(version uint) (nextVersion uint, err error) {
 	}
 }
 
-func (g *Github) ReadUp(version uint) (r io.ReadCloser, identifier string, err error) {
+func (g *Github) ReadUp(version uint64) (r io.ReadCloser, identifier string, err error) {
 	g.ensureFields()
 
 	if m, ok := g.migrations.Up(version); ok {
@@ -194,7 +194,7 @@ func (g *Github) ReadUp(version uint) (r io.ReadCloser, identifier string, err e
 	return nil, "", &os.PathError{Op: fmt.Sprintf("read version %v", version), Path: g.config.Path, Err: os.ErrNotExist}
 }
 
-func (g *Github) ReadDown(version uint) (r io.ReadCloser, identifier string, err error) {
+func (g *Github) ReadDown(version uint64) (r io.ReadCloser, identifier string, err error) {
 	g.ensureFields()
 
 	if m, ok := g.migrations.Down(version); ok {

@@ -136,7 +136,7 @@ func (f *Firebird) Run(migration io.Reader) error {
 	return nil
 }
 
-func (f *Firebird) SetVersion(version int, dirty bool) error {
+func (f *Firebird) SetVersion(version int64, dirty bool) error {
 	// Always re-write the schema version to prevent empty schema version
 	// for failed down migration on the first migration
 	// See: https://github.com/golang-migrate/migrate/issues/330
@@ -157,7 +157,7 @@ func (f *Firebird) SetVersion(version int, dirty bool) error {
 	return nil
 }
 
-func (f *Firebird) Version() (version int, dirty bool, err error) {
+func (f *Firebird) Version() (version int64, dirty bool, err error) {
 	var d int
 	query := fmt.Sprintf(`SELECT FIRST 1 version, dirty FROM "%v"`, f.config.MigrationsTable)
 	err = f.conn.QueryRowContext(context.Background(), query).Scan(&version, &d)

@@ -61,8 +61,8 @@ type Config struct {
 	Locking              Locking
 }
 type versionInfo struct {
-	Version int  `bson:"version"`
-	Dirty   bool `bson:"dirty"`
+	Version int64 `bson:"version"`
+	Dirty   bool  `bson:"dirty"`
 }
 
 type lockObj struct {
@@ -215,7 +215,7 @@ func parseInt(urlParam string, defaultValue int) (int, error) {
 	// if no url Param passed, return default value
 	return defaultValue, nil
 }
-func (m *Mongo) SetVersion(version int, dirty bool) error {
+func (m *Mongo) SetVersion(version int64, dirty bool) error {
 	migrationsCollection := m.db.Collection(m.config.MigrationsCollection)
 	if err := migrationsCollection.Drop(context.TODO()); err != nil {
 		return &database.Error{OrigErr: err, Err: "drop migrations collection failed"}
@@ -227,7 +227,7 @@ func (m *Mongo) SetVersion(version int, dirty bool) error {
 	return nil
 }
 
-func (m *Mongo) Version() (version int, dirty bool, err error) {
+func (m *Mongo) Version() (version int64, dirty bool, err error) {
 	var versionInfo versionInfo
 	err = m.db.Collection(m.config.MigrationsCollection).FindOne(context.TODO(), bson.M{}).Decode(&versionInfo)
 	switch {

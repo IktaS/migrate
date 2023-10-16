@@ -11,9 +11,9 @@ import (
 
 	"go.uber.org/atomic"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/database/multistmt"
+	"github.com/IktaS/migrate"
+	"github.com/IktaS/migrate/database"
+	"github.com/IktaS/migrate/database/multistmt"
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -163,9 +163,9 @@ func (ch *ClickHouse) Run(r io.Reader) error {
 
 	return nil
 }
-func (ch *ClickHouse) Version() (int, bool, error) {
+func (ch *ClickHouse) Version() (int64, bool, error) {
 	var (
-		version int
+		version int64
 		dirty   uint8
 		query   = "SELECT version, dirty FROM `" + ch.config.MigrationsTable + "` ORDER BY sequence DESC LIMIT 1"
 	)
@@ -178,7 +178,7 @@ func (ch *ClickHouse) Version() (int, bool, error) {
 	return version, dirty == 1, nil
 }
 
-func (ch *ClickHouse) SetVersion(version int, dirty bool) error {
+func (ch *ClickHouse) SetVersion(version int64, dirty bool) error {
 	var (
 		bool = func(v bool) uint8 {
 			if v {

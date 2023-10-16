@@ -256,7 +256,7 @@ func (ss *SQLServer) Run(migration io.Reader) error {
 }
 
 // SetVersion for the current database
-func (ss *SQLServer) SetVersion(version int, dirty bool) error {
+func (ss *SQLServer) SetVersion(version int64, dirty bool) error {
 
 	tx, err := ss.conn.BeginTx(context.Background(), &sql.TxOptions{})
 	if err != nil {
@@ -296,7 +296,7 @@ func (ss *SQLServer) SetVersion(version int, dirty bool) error {
 }
 
 // Version of the current database state
-func (ss *SQLServer) Version() (version int, dirty bool, err error) {
+func (ss *SQLServer) Version() (version int64, dirty bool, err error) {
 	query := `SELECT TOP 1 version, dirty FROM "` + ss.config.MigrationsTable + `"`
 	err = ss.conn.QueryRowContext(context.Background(), query).Scan(&version, &dirty)
 	switch {

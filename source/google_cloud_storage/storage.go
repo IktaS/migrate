@@ -8,8 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"cloud.google.com/go/storage"
 	"context"
+
+	"cloud.google.com/go/storage"
 	"github.com/golang-migrate/migrate/v4/source"
 	"google.golang.org/api/iterator"
 )
@@ -71,7 +72,7 @@ func (g *gcs) Close() error {
 	return nil
 }
 
-func (g *gcs) First() (uint, error) {
+func (g *gcs) First() (uint64, error) {
 	v, ok := g.migrations.First()
 	if !ok {
 		return 0, os.ErrNotExist
@@ -79,7 +80,7 @@ func (g *gcs) First() (uint, error) {
 	return v, nil
 }
 
-func (g *gcs) Prev(version uint) (uint, error) {
+func (g *gcs) Prev(version uint64) (uint64, error) {
 	v, ok := g.migrations.Prev(version)
 	if !ok {
 		return 0, os.ErrNotExist
@@ -87,7 +88,7 @@ func (g *gcs) Prev(version uint) (uint, error) {
 	return v, nil
 }
 
-func (g *gcs) Next(version uint) (uint, error) {
+func (g *gcs) Next(version uint64) (uint64, error) {
 	v, ok := g.migrations.Next(version)
 	if !ok {
 		return 0, os.ErrNotExist
@@ -95,14 +96,14 @@ func (g *gcs) Next(version uint) (uint, error) {
 	return v, nil
 }
 
-func (g *gcs) ReadUp(version uint) (io.ReadCloser, string, error) {
+func (g *gcs) ReadUp(version uint64) (io.ReadCloser, string, error) {
 	if m, ok := g.migrations.Up(version); ok {
 		return g.open(m)
 	}
 	return nil, "", os.ErrNotExist
 }
 
-func (g *gcs) ReadDown(version uint) (io.ReadCloser, string, error) {
+func (g *gcs) ReadDown(version uint64) (io.ReadCloser, string, error) {
 	if m, ok := g.migrations.Down(version); ok {
 		return g.open(m)
 	}

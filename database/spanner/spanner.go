@@ -200,7 +200,7 @@ func (s *Spanner) Run(migration io.Reader) error {
 }
 
 // SetVersion implements database.Driver
-func (s *Spanner) SetVersion(version int, dirty bool) error {
+func (s *Spanner) SetVersion(version int64, dirty bool) error {
 	ctx := context.Background()
 
 	_, err := s.db.data.ReadWriteTransaction(ctx,
@@ -221,7 +221,7 @@ func (s *Spanner) SetVersion(version int, dirty bool) error {
 }
 
 // Version implements database.Driver
-func (s *Spanner) Version() (version int, dirty bool, err error) {
+func (s *Spanner) Version() (version int64, dirty bool, err error) {
 	ctx := context.Background()
 
 	stmt := spanner.Statement{
@@ -239,7 +239,7 @@ func (s *Spanner) Version() (version int, dirty bool, err error) {
 		if err = row.Columns(&v, &dirty); err != nil {
 			return 0, false, &database.Error{OrigErr: err, Query: []byte(stmt.SQL)}
 		}
-		version = int(v)
+		version = v
 	default:
 		return 0, false, &database.Error{OrigErr: err, Query: []byte(stmt.SQL)}
 	}

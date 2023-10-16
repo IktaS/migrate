@@ -1,4 +1,4 @@
-module github.com/golang-migrate/migrate/v4
+module github.com/IktaS/migrate
 
 require (
 	cloud.google.com/go/spanner v1.47.0

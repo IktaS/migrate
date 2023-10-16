@@ -17,7 +17,7 @@ var (
 	ErrNotLocked = fmt.Errorf("can't unlock, as not currently locked")
 )
 
-const NilVersion int = -1
+const NilVersion int64 = -1
 
 var driversMu sync.RWMutex
 var drivers = make(map[string]Driver)
@@ -68,12 +68,12 @@ type Driver interface {
 	// SetVersion saves version and dirty state.
 	// Migrate will call this function before and after each call to Run.
 	// version must be >= -1. -1 means NilVersion.
-	SetVersion(version int, dirty bool) error
+	SetVersion(version int64, dirty bool) error
 
 	// Version returns the currently active version and if the database is dirty.
 	// When no migration has been applied, it must return version -1.
 	// Dirty means, a previous migration failed and user interaction is required.
-	Version() (version int, dirty bool, err error)
+	Version() (version int64, dirty bool, err error)
 
 	// Drop deletes everything in the database.
 	// Note that this is a breaking action, a new call to Open() is necessary to

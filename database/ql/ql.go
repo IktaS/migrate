@@ -202,7 +202,7 @@ func (m *Ql) executeQuery(query string) error {
 	}
 	return nil
 }
-func (m *Ql) SetVersion(version int, dirty bool) error {
+func (m *Ql) SetVersion(version int64, dirty bool) error {
 	tx, err := m.db.Begin()
 	if err != nil {
 		return &database.Error{OrigErr: err, Err: "transaction start failed"}
@@ -234,7 +234,7 @@ func (m *Ql) SetVersion(version int, dirty bool) error {
 	return nil
 }
 
-func (m *Ql) Version() (version int, dirty bool, err error) {
+func (m *Ql) Version() (version int64, dirty bool, err error) {
 	query := "SELECT version, dirty FROM " + m.config.MigrationsTable + " LIMIT 1"
 	err = m.db.QueryRow(query).Scan(&version, &dirty)
 	if err != nil {

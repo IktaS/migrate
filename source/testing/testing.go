@@ -40,9 +40,9 @@ func TestFirst(t *testing.T, d source.Driver) {
 
 func TestPrev(t *testing.T, d source.Driver) {
 	tt := []struct {
-		version           uint
+		version           uint64
 		expectErr         error
-		expectPrevVersion uint
+		expectPrevVersion uint64
 	}{
 		{version: 0, expectErr: os.ErrNotExist},
 		{version: 1, expectErr: os.ErrNotExist},
@@ -69,9 +69,9 @@ func TestPrev(t *testing.T, d source.Driver) {
 
 func TestNext(t *testing.T, d source.Driver) {
 	tt := []struct {
-		version           uint
+		version           uint64
 		expectErr         error
-		expectNextVersion uint
+		expectNextVersion uint64
 	}{
 		{version: 0, expectErr: os.ErrNotExist},
 		{version: 1, expectErr: nil, expectNextVersion: 3},
@@ -98,7 +98,7 @@ func TestNext(t *testing.T, d source.Driver) {
 
 func TestReadUp(t *testing.T, d source.Driver) {
 	tt := []struct {
-		version   uint
+		version   uint64
 		expectErr error
 		expectUp  bool
 	}{
@@ -140,7 +140,7 @@ func TestReadUp(t *testing.T, d source.Driver) {
 
 func TestReadDown(t *testing.T, d source.Driver) {
 	tt := []struct {
-		version    uint
+		version    uint64
 		expectErr  error
 		expectDown bool
 	}{

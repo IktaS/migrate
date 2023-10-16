@@ -181,7 +181,7 @@ func (n *Neo4j) Run(migration io.Reader) (err error) {
 	return err
 }
 
-func (n *Neo4j) SetVersion(version int, dirty bool) (err error) {
+func (n *Neo4j) SetVersion(version int64, dirty bool) (err error) {
 	session, err := n.driver.Session(neo4j.AccessModeWrite)
 	if err != nil {
 		return err
@@ -202,11 +202,11 @@ func (n *Neo4j) SetVersion(version int, dirty bool) (err error) {
 }
 
 type MigrationRecord struct {
-	Version int
+	Version int64
 	Dirty   bool
 }
 
-func (n *Neo4j) Version() (version int, dirty bool, err error) {
+func (n *Neo4j) Version() (version int64, dirty bool, err error) {
 	session, err := n.driver.Session(neo4j.AccessModeRead)
 	if err != nil {
 		return database.NilVersion, false, err
@@ -232,7 +232,7 @@ ORDER BY COALESCE(sm.ts, datetime({year: 0})) DESC, sm.version DESC LIMIT 1`,
 			if !ok {
 				mr.Version = database.NilVersion
 			} else {
-				mr.Version = int(versionResult.(int64))
+				mr.Version = versionResult.(int64)
 			}
 
 			dirtyResult, ok := record.Get("dirty")
