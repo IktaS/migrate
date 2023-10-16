@@ -13,9 +13,9 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 
-	"github.com/golang-migrate/migrate/v4/database"
-	iurl "github.com/golang-migrate/migrate/v4/internal/url"
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate/database"
+	iurl "github.com/IktaS/migrate/internal/url"
+	"github.com/IktaS/migrate/source"
 )
 
 // DefaultPrefetchMigrations sets the number of migrations to pre-read
@@ -39,7 +39,7 @@ var (
 // ErrShortLimit is an error returned when not enough migrations
 // can be returned by a source for a given limit.
 type ErrShortLimit struct {
-	Short uint
+	Short uint64
 }
 
 // Error implements the error interface.
@@ -211,7 +211,7 @@ func (m *Migrate) Close() (source error, database error) {
 
 // Migrate looks at the currently active migration version,
 // then migrates either up or down to the specified version.
-func (m *Migrate) Migrate(version uint) error {
+func (m *Migrate) Migrate(version uint64) error {
 	if err := m.lock(); err != nil {
 		return err
 	}
@@ -226,14 +226,14 @@ func (m *Migrate) Migrate(version uint) error {
 	}
 
 	ret := make(chan interface{}, m.PrefetchMigrations)
-	go m.read(curVersion, int(version), ret)
+	go m.read(curVersion, int64(version), ret)
 
 	return m.unlockErr(m.runMigrations(ret))
 }
 
 // Steps looks at the currently active migration version.
 // It will migrate up if n > 0, and down if n < 0.
-func (m *Migrate) Steps(n int) error {
+func (m *Migrate) Steps(n int64) error {
 	if n == 0 {
 		return ErrNoChange
 	}
@@ -364,7 +364,7 @@ func (m *Migrate) Run(migration ...*Migration) error {
 // Force sets a migration version.
 // It does not check any currently active version in database.
 // It resets the dirty state to false.
-func (m *Migrate) Force(version int) error {
+func (m *Migrate) Force(version int64) error {
 	if version < -1 {
 		return ErrInvalidVersion
 	}
@@ -382,7 +382,7 @@ func (m *Migrate) Force(version int) error {
 
 // Version returns the currently active migration version.
 // If no migration has been applied, yet, it will return ErrNilVersion.
-func (m *Migrate) Version() (version uint, dirty bool, err error) {
+func (m *Migrate) Version() (version uint64, dirty bool, err error) {
 	v, d, err := m.databaseDrv.Version()
 	if err != nil {
 		return 0, false, err
@@ -392,19 +392,19 @@ func (m *Migrate) Version() (version uint, dirty bool, err error) {
 		return 0, false, ErrNilVersion
 	}
 
-	return suint(v), d, nil
+	return suint64(v), d, nil
 }
 
 // read reads either up or down migrations from source `from` to `to`.
 // Each migration is then written to the ret channel.
 // If an error occurs during reading, that error is written to the ret channel, too.
 // Once read is done reading it will close the ret channel.
-func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
+func (m *Migrate) read(from int64, to int64, ret chan<- interface{}) {
 	defer close(ret)
 
 	// check if from version exists
 	if from >= 0 {
-		if err := m.versionExists(suint(from)); err != nil {
+		if err := m.versionExists(suint64(from)); err != nil {
 			ret <- err
 			return
 		}
@@ -412,7 +412,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 
 	// check if to version exists
 	if to >= 0 {
-		if err := m.versionExists(suint(to)); err != nil {
+		if err := m.versionExists(suint64(to)); err != nil {
 			ret <- err
 			return
 		}
@@ -434,7 +434,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				return
 			}
 
-			migr, err := m.newMigration(firstVersion, int(firstVersion))
+			migr, err := m.newMigration(firstVersion, int64(firstVersion))
 			if err != nil {
 				ret <- err
 				return
@@ -447,7 +447,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				}
 			}()
 
-			from = int(firstVersion)
+			from = int64(firstVersion)
 		}
 
 		// run until we reach target ...
@@ -456,13 +456,13 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				return
 			}
 
-			next, err := m.sourceDrv.Next(suint(from))
+			next, err := m.sourceDrv.Next(suint64(from))
 			if err != nil {
 				ret <- err
 				return
 			}
 
-			migr, err := m.newMigration(next, int(next))
+			migr, err := m.newMigration(next, int64(next))
 			if err != nil {
 				ret <- err
 				return
@@ -475,7 +475,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				}
 			}()
 
-			from = int(next)
+			from = int64(next)
 		}
 
 	} else {
@@ -486,10 +486,10 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				return
 			}
 
-			prev, err := m.sourceDrv.Prev(suint(from))
+			prev, err := m.sourceDrv.Prev(suint64(from))
 			if errors.Is(err, os.ErrNotExist) && to == -1 {
 				// apply nil migration
-				migr, err := m.newMigration(suint(from), -1)
+				migr, err := m.newMigration(suint64(from), -1)
 				if err != nil {
 					ret <- err
 					return
@@ -508,7 +508,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				return
 			}
 
-			migr, err := m.newMigration(suint(from), int(prev))
+			migr, err := m.newMigration(suint64(from), int64(prev))
 			if err != nil {
 				ret <- err
 				return
@@ -521,7 +521,7 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 				}
 			}()
 
-			from = int(prev)
+			from = int64(prev)
 		}
 	}
 }
@@ -531,12 +531,12 @@ func (m *Migrate) read(from int64, to int, ret chan<- interface{}) {
 // Each migration is then written to the ret channel.
 // If an error occurs during reading, that error is written to the ret channel, too.
 // Once readUp is done reading it will close the ret channel.
-func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
+func (m *Migrate) readUp(from int64, limit int64, ret chan<- interface{}) {
 	defer close(ret)
 
 	// check if from version exists
 	if from >= 0 {
-		if err := m.versionExists(suint(from)); err != nil {
+		if err := m.versionExists(suint64(from)); err != nil {
 			ret <- err
 			return
 		}
@@ -547,7 +547,7 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 		return
 	}
 
-	count := 0
+	count := int64(0)
 	for count < limit || limit == -1 {
 		if m.stop() {
 			return
@@ -561,7 +561,7 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 				return
 			}
 
-			migr, err := m.newMigration(firstVersion, int(firstVersion))
+			migr, err := m.newMigration(firstVersion, int64(firstVersion))
 			if err != nil {
 				ret <- err
 				return
@@ -573,13 +573,13 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 					m.logErr(err)
 				}
 			}()
-			from = int(firstVersion)
+			from = int64(firstVersion)
 			count++
 			continue
 		}
 
 		// apply next migration
-		next, err := m.sourceDrv.Next(suint(from))
+		next, err := m.sourceDrv.Next(suint64(from))
 		if errors.Is(err, os.ErrNotExist) {
 			// no limit, but no migrations applied?
 			if limit == -1 && count == 0 {
@@ -600,7 +600,7 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 
 			// applied less migrations than limit?
 			if count < limit {
-				ret <- ErrShortLimit{suint(limit - count)}
+				ret <- ErrShortLimit{suint64(limit - count)}
 				return
 			}
 		}
@@ -609,7 +609,7 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 			return
 		}
 
-		migr, err := m.newMigration(next, int(next))
+		migr, err := m.newMigration(next, int64(next))
 		if err != nil {
 			ret <- err
 			return
@@ -621,7 +621,7 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 				m.logErr(err)
 			}
 		}()
-		from = int(next)
+		from = int64(next)
 		count++
 	}
 }
@@ -631,12 +631,12 @@ func (m *Migrate) readUp(from int, limit int, ret chan<- interface{}) {
 // Each migration is then written to the ret channel.
 // If an error occurs during reading, that error is written to the ret channel, too.
 // Once readDown is done reading it will close the ret channel.
-func (m *Migrate) readDown(from int, limit int, ret chan<- interface{}) {
+func (m *Migrate) readDown(from int64, limit int64, ret chan<- interface{}) {
 	defer close(ret)
 
 	// check if from version exists
 	if from >= 0 {
-		if err := m.versionExists(suint(from)); err != nil {
+		if err := m.versionExists(suint64(from)); err != nil {
 			ret <- err
 			return
 		}
@@ -659,13 +659,13 @@ func (m *Migrate) readDown(from int, limit int, ret chan<- interface{}) {
 		return
 	}
 
-	count := 0
+	count := int64(0)
 	for count < limit || limit == -1 {
 		if m.stop() {
 			return
 		}
 
-		prev, err := m.sourceDrv.Prev(suint(from))
+		prev, err := m.sourceDrv.Prev(suint64(from))
 		if errors.Is(err, os.ErrNotExist) {
 			// no limit or haven't reached limit, apply "first" migration
 			if limit == -1 || limit-count > 0 {
@@ -690,7 +690,7 @@ func (m *Migrate) readDown(from int, limit int, ret chan<- interface{}) {
 			}
 
 			if count < limit {
-				ret <- ErrShortLimit{suint(limit - count)}
+				ret <- ErrShortLimit{suint64(limit - count)}
 			}
 			return
 		}
@@ -699,7 +699,7 @@ func (m *Migrate) readDown(from int, limit int, ret chan<- interface{}) {
 			return
 		}
 
-		migr, err := m.newMigration(suint(from), int(prev))
+		migr, err := m.newMigration(suint64(from), int64(prev))
 		if err != nil {
 			ret <- err
 			return
@@ -711,7 +711,7 @@ func (m *Migrate) readDown(from int, limit int, ret chan<- interface{}) {
 				m.logErr(err)
 			}
 		}()
-		from = int(prev)
+		from = int64(prev)
 		count++
 	}
 }
@@ -831,10 +831,10 @@ func (m *Migrate) stop() bool {
 
 // newMigration is a helper func that returns a *Migration for the
 // specified version and targetVersion.
-func (m *Migrate) newMigration(version uint, targetVersion int) (*Migration, error) {
+func (m *Migrate) newMigration(version uint64, targetVersion int64) (*Migration, error) {
 	var migr *Migration
 
-	if targetVersion >= int(version) {
+	if targetVersion >= int64(version) {
 		r, identifier, err := m.sourceDrv.ReadUp(version)
 		if errors.Is(err, os.ErrNotExist) {
 			// create "empty" migration

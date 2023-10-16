@@ -11,7 +11,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate/source"
 )
 
 type driver struct {
@@ -108,7 +108,7 @@ func (d *PartialDriver) Prev(version uint64) (prevVersion uint64, err error) {
 		return version, nil
 	}
 	return 0, &fs.PathError{
-		Op:   "prev for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "prev for version " + strconv.FormatUint(version, 10),
 		Path: d.path,
 		Err:  fs.ErrNotExist,
 	}
@@ -120,7 +120,7 @@ func (d *PartialDriver) Next(version uint64) (nextVersion uint64, err error) {
 		return version, nil
 	}
 	return 0, &fs.PathError{
-		Op:   "next for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "next for version " + strconv.FormatUint(version, 10),
 		Path: d.path,
 		Err:  fs.ErrNotExist,
 	}
@@ -136,7 +136,7 @@ func (d *PartialDriver) ReadUp(version uint64) (r io.ReadCloser, identifier stri
 		return body, m.Identifier, nil
 	}
 	return nil, "", &fs.PathError{
-		Op:   "read up for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "read up for version " + strconv.FormatUint(version, 10),
 		Path: d.path,
 		Err:  fs.ErrNotExist,
 	}
@@ -152,7 +152,7 @@ func (d *PartialDriver) ReadDown(version uint64) (r io.ReadCloser, identifier st
 		return body, m.Identifier, nil
 	}
 	return nil, "", &fs.PathError{
-		Op:   "read down for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "read down for version " + strconv.FormatUint(version, 10),
 		Path: d.path,
 		Err:  fs.ErrNotExist,
 	}

@@ -37,10 +37,10 @@ func (m MultiError) Error() string {
 	return strings.Join(strs, " and ")
 }
 
-// suint safely converts int to uint
+// suint64 safely converts int64 to uint64
 // see https://goo.gl/wEcqof
 // see https://goo.gl/pai7Dr
-func suint(n int64) uint64 {
+func suint64(n int64) uint64 {
 	if n < 0 {
 		panic(fmt.Sprintf("suint(%v) expects input >= 0", n))
 	}

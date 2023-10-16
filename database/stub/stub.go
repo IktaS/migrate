@@ -6,7 +6,7 @@ import (
 
 	"go.uber.org/atomic"
 
-	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/IktaS/migrate/database"
 )
 
 func init() {

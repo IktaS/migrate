@@ -78,9 +78,9 @@ Here is a very simple app running migrations for the above configuration:
 import (
 	"log"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/neo4j"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/IktaS/migrate"
+	_ "github.com/IktaS/migrate/database/neo4j"
+	_ "github.com/IktaS/migrate/source/file"
 )
 
 func main() {

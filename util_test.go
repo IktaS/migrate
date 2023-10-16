@@ -11,11 +11,11 @@ func TestSuintPanicsWithNegativeInput(t *testing.T) {
 			t.Fatal("expected suint to panic for -1")
 		}
 	}()
-	suint(-1)
+	suint64(-1)
 }
 
 func TestSuint(t *testing.T) {
-	if u := suint(0); u != 0 {
+	if u := suint64(0); u != 0 {
 		t.Fatalf("expected 0, got %v", u)
 	}
 }

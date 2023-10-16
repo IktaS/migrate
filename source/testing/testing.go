@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate/source"
 )
 
 // Test runs tests against source implementations.

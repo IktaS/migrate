@@ -259,7 +259,7 @@ func TestNumDownFromArgs(t *testing.T) {
 		args                []string
 		applyAll            bool
 		expectedNeedConfirm bool
-		expectedNum         int
+		expectedNum         int64
 		expectedErrStr      string
 	}{
 		{"no args", []string{}, false, true, -1, ""},

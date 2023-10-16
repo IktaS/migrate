@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate"
+	"github.com/IktaS/migrate/database"
+	"github.com/IktaS/migrate/source"
 )
 
 const (
@@ -215,7 +215,7 @@ Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoU
 			log.fatal("error: can't read version argument V")
 		}
 
-		if err := gotoCmd(migrater, uint(v)); err != nil {
+		if err := gotoCmd(migrater, v); err != nil {
 			log.fatalErr(err)
 		}
 
@@ -236,13 +236,13 @@ Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoU
 			log.fatalErr(migraterErr)
 		}
 
-		limit := -1
+		limit := int64(-1)
 		if upSet.NArg() > 0 {
 			n, err := strconv.ParseUint(upSet.Arg(0), 10, 64)
 			if err != nil {
 				log.fatal("error: can't read limit argument N")
 			}
-			limit = int(n)
+			limit = int64(n)
 		}
 
 		if err := upCmd(migrater, limit); err != nil {
@@ -354,7 +354,7 @@ Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoU
 			log.fatal("error: argument V must be >= -1")
 		}
 
-		if err := forceCmd(migrater, int(v)); err != nil {
+		if err := forceCmd(migrater, v); err != nil {
 			log.fatalErr(err)
 		}
 

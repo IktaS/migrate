@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate/source"
 	"github.com/ktrysmt/go-bitbucket"
 )
 

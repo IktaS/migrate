@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	dStub "github.com/golang-migrate/migrate/v4/database/stub"
-	"github.com/golang-migrate/migrate/v4/source"
-	sStub "github.com/golang-migrate/migrate/v4/source/stub"
+	dStub "github.com/IktaS/migrate/database/stub"
+	"github.com/IktaS/migrate/source"
+	sStub "github.com/IktaS/migrate/source/stub"
 )
 
 // sourceStubMigrations hold the following migrations:
@@ -116,7 +116,7 @@ func ExampleNewWithDatabaseInstance() {
 
 	// Create driver instance from db.
 	// Check each driver if it supports the WithInstance function.
-	// `import "github.com/golang-migrate/migrate/v4/database/postgres"`
+	// `import "github.com/IktaS/migrate/database/postgres"`
 	instance, err := dStub.WithInstance(db, &dStub.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -166,7 +166,7 @@ func ExampleNewWithSourceInstance() {
 
 	// Create driver instance from DummyInstance di.
 	// Check each driver if it support the WithInstance function.
-	// `import "github.com/golang-migrate/migrate/v4/source/stub"`
+	// `import "github.com/IktaS/migrate/source/stub"`
 	instance, err := sStub.WithInstance(di, &sStub.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -238,9 +238,9 @@ func TestMigrate(t *testing.T) {
 	dbDrv := m.databaseDrv.(*dStub.Stub)
 
 	tt := []struct {
-		version       uint
+		version       uint64
 		expectErr     error
-		expectVersion uint
+		expectVersion uint64
 		expectSeq     migrationSequence
 	}{
 		// migrate all the way Up in single steps
@@ -504,9 +504,9 @@ func TestSteps(t *testing.T) {
 	dbDrv := m.databaseDrv.(*dStub.Stub)
 
 	tt := []struct {
-		steps         int
+		steps         int64
 		expectErr     error
-		expectVersion int
+		expectVersion int64
 		expectSeq     migrationSequence
 	}{
 		// step must be != 0
@@ -743,7 +743,7 @@ func TestSteps(t *testing.T) {
 			if v.expectVersion == -1 && err != ErrNilVersion {
 				t.Errorf("expected ErrNilVersion, got %v, in %v", version, i)
 
-			} else if v.expectVersion >= 0 && version != uint(v.expectVersion) {
+			} else if v.expectVersion >= 0 && version != uint64(v.expectVersion) {
 				t.Errorf("expected version %v, got %v, in %v", v.expectVersion, version, i)
 			}
 		}
@@ -1022,8 +1022,8 @@ func TestRead(t *testing.T) {
 	m.sourceDrv.(*sStub.Stub).Migrations = sourceStubMigrations
 
 	tt := []struct {
-		from             int
-		to               int
+		from             int64
+		to               int64
 		expectErr        error
 		expectMigrations migrationSequence
 	}{
@@ -1159,8 +1159,8 @@ func TestReadUp(t *testing.T) {
 	m.sourceDrv.(*sStub.Stub).Migrations = sourceStubMigrations
 
 	tt := []struct {
-		from             int
-		limit            int // -1 means no limit
+		from             int64
+		limit            int64 // -1 means no limit
 		expectErr        error
 		expectMigrations migrationSequence
 	}{
@@ -1236,8 +1236,8 @@ func TestReadDown(t *testing.T) {
 	m.sourceDrv.(*sStub.Stub).Migrations = sourceStubMigrations
 
 	tt := []struct {
-		from             int
-		limit            int // -1 means no limit
+		from             int64
+		limit            int64 // -1 means no limit
 		expectErr        error
 		expectMigrations migrationSequence
 	}{
@@ -1366,11 +1366,11 @@ func (m *migrationSequence) bodySequence() []string {
 }
 
 // M is a convenience func to create a new *Migration
-func M(version uint, targetVersion ...int) *Migration {
+func M(version uint64, targetVersion ...int64) *Migration {
 	if len(targetVersion) > 1 {
 		panic("only one targetVersion allowed")
 	}
-	ts := int(version)
+	ts := int64(version)
 	if len(targetVersion) == 1 {
 		ts = targetVersion[0]
 	}

@@ -8,7 +8,7 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/golang-migrate/migrate/v4/source"
+	"github.com/IktaS/migrate/source"
 )
 
 // PartialDriver is a helper service for creating new source drivers working with
@@ -88,7 +88,7 @@ func (p *PartialDriver) Prev(version uint64) (prevVersion uint64, err error) {
 		return version, nil
 	}
 	return 0, &os.PathError{
-		Op:   "prev for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "prev for version " + strconv.FormatUint(version, 10),
 		Path: p.path,
 		Err:  os.ErrNotExist,
 	}
@@ -100,7 +100,7 @@ func (p *PartialDriver) Next(version uint64) (nextVersion uint64, err error) {
 		return version, nil
 	}
 	return 0, &os.PathError{
-		Op:   "next for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "next for version " + strconv.FormatUint(version, 10),
 		Path: p.path,
 		Err:  os.ErrNotExist,
 	}
@@ -116,7 +116,7 @@ func (p *PartialDriver) ReadUp(version uint64) (r io.ReadCloser, identifier stri
 		return body, m.Identifier, nil
 	}
 	return nil, "", &os.PathError{
-		Op:   "read up for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "read up for version " + strconv.FormatUint(version, 10),
 		Path: p.path,
 		Err:  os.ErrNotExist,
 	}
@@ -132,7 +132,7 @@ func (p *PartialDriver) ReadDown(version uint64) (r io.ReadCloser, identifier st
 		return body, m.Identifier, nil
 	}
 	return nil, "", &os.PathError{
-		Op:   "read down for version " + strconv.FormatUint(uint64(version), 10),
+		Op:   "read down for version " + strconv.FormatUint(version, 10),
 		Path: p.path,
 		Err:  os.ErrNotExist,
 	}

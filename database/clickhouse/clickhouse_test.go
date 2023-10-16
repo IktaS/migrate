@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	_ "github.com/ClickHouse/clickhouse-go"
+	"github.com/IktaS/migrate"
+	"github.com/IktaS/migrate/database/clickhouse"
+	dt "github.com/IktaS/migrate/database/testing"
+	"github.com/IktaS/migrate/dktesting"
+	_ "github.com/IktaS/migrate/source/file"
 	"github.com/dhui/dktest"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/clickhouse"
-	dt "github.com/golang-migrate/migrate/v4/database/testing"
-	"github.com/golang-migrate/migrate/v4/dktesting"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 const defaultPort = 9000

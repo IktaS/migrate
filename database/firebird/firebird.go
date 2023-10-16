@@ -10,8 +10,8 @@ import (
 	"io"
 	nurl "net/url"
 
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/IktaS/migrate"
+	"github.com/IktaS/migrate/database"
 	"github.com/hashicorp/go-multierror"
 	_ "github.com/nakagami/firebirdsql"
 	"go.uber.org/atomic"

@@ -20,12 +20,12 @@ type Migration struct {
 	Identifier string
 
 	// Version is the version of this migration.
-	Version uint
+	Version uint64
 
 	// TargetVersion is the migration version after this migration
 	// has been applied to the database.
 	// Can be -1, implying that this is a NilVersion.
-	TargetVersion int
+	TargetVersion int64
 
 	// Body holds an io.ReadCloser to the source.
 	Body io.ReadCloser
@@ -74,7 +74,7 @@ type Migration struct {
 // last down migration, there is no next down migration, the targetVersion should
 // be nil. Nil in this case is represented by -1 (because type int).
 func NewMigration(body io.ReadCloser, identifier string,
-	version uint, targetVersion int) (*Migration, error) {
+	version uint64, targetVersion int64) (*Migration, error) {
 	tnow := time.Now()
 	m := &Migration{
 		Identifier:    identifier,
@@ -110,7 +110,7 @@ func (m *Migration) String() string {
 // LogString returns a string describing this migration to humans.
 func (m *Migration) LogString() string {
 	directionStr := "u"
-	if m.TargetVersion < int(m.Version) {
+	if m.TargetVersion < int64(m.Version) {
 		directionStr = "d"
 	}
 	return fmt.Sprintf("%v/%v %v", m.Version, directionStr, m.Identifier)

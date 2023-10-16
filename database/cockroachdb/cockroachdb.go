@@ -9,9 +9,9 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/IktaS/migrate"
+	"github.com/IktaS/migrate/database"
 	"github.com/cockroachdb/cockroach-go/v2/crdb"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/hashicorp/go-multierror"
 	"github.com/lib/pq"
 	"go.uber.org/atomic"

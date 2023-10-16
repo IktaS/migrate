@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/stub" // TODO remove again
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/IktaS/migrate"
+	_ "github.com/IktaS/migrate/database/stub" // TODO remove again
+	_ "github.com/IktaS/migrate/source/file"
 )
 
 var (
@@ -147,7 +147,7 @@ func createFile(filename string) error {
 	return f.Close()
 }
 
-func gotoCmd(m *migrate.Migrate, v uint) error {
+func gotoCmd(m *migrate.Migrate, v uint64) error {
 	if err := m.Migrate(v); err != nil {
 		if err != migrate.ErrNoChange {
 			return err
@@ -157,7 +157,7 @@ func gotoCmd(m *migrate.Migrate, v uint) error {
 	return nil
 }
 
-func upCmd(m *migrate.Migrate, limit int) error {
+func upCmd(m *migrate.Migrate, limit int64) error {
 	if limit >= 0 {
 		if err := m.Steps(limit); err != nil {
 			if err != migrate.ErrNoChange {
@@ -176,7 +176,7 @@ func upCmd(m *migrate.Migrate, limit int) error {
 	return nil
 }
 
-func downCmd(m *migrate.Migrate, limit int) error {
+func downCmd(m *migrate.Migrate, limit int64) error {
 	if limit >= 0 {
 		if err := m.Steps(-limit); err != nil {
 			if err != migrate.ErrNoChange {
@@ -202,7 +202,7 @@ func dropCmd(m *migrate.Migrate) error {
 	return nil
 }
 
-func forceCmd(m *migrate.Migrate, v int) error {
+func forceCmd(m *migrate.Migrate, v int64) error {
 	if err := m.Force(v); err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func versionCmd(m *migrate.Migrate) error {
 
 // numDownMigrationsFromArgs returns an int for number of migrations to apply
 // and a bool indicating if we need a confirm before applying
-func numDownMigrationsFromArgs(applyAll bool, args []string) (int, bool, error) {
+func numDownMigrationsFromArgs(applyAll bool, args []string) (int64, bool, error) {
 	if applyAll {
 		if len(args) > 0 {
 			return 0, false, errors.New("-all cannot be used with other arguments")
@@ -241,7 +241,7 @@ func numDownMigrationsFromArgs(applyAll bool, args []string) (int, bool, error) 
 		if err != nil {
 			return 0, false, errors.New("can't read limit argument N")
 		}
-		return int(n), false, nil
+		return int64(n), false, nil
 	default:
 		return 0, false, errors.New("too many arguments")
 	}
